@@ -19,9 +19,8 @@ impl Fix for EndingBlankLineFixer<'_> {
     }
 
     fn fix_line(&self, line: &mut LineEntry) -> Option<()> {
-        // we don't need to append anything, because fs_utils::write_file() uses writeln!, we just need to modify this
         if line.is_last_line() && !line.raw_string.ends_with(LF) {
-            line.raw_string.push_str("");
+            line.raw_string.push_str("\n");
         }
         Some(())
     }
@@ -45,7 +44,7 @@ mod tests {
             raw_string: String::from("FOO=BAR"),
         };
         assert_eq!(Some(()), fixer.fix_line(&mut line));
-        assert_eq!("FOO=BAR", line.raw_string);
+        assert_eq!("FOO=BAR\n", line.raw_string);
     }
 
     #[test]
@@ -67,7 +66,7 @@ mod tests {
         );
 
         assert_eq!(Some(1), fixer.fix_warnings(vec![&mut warning], &mut lines));
-        assert_eq!("A=B", lines[0].raw_string);
+        assert_eq!("A=B\n", lines[0].raw_string);
         assert!(warning.is_fixed);
     }
 }
