@@ -20,7 +20,7 @@ impl Fix for EndingBlankLineFixer<'_> {
 
     fn fix_line(&self, line: &mut LineEntry) -> Option<()> {
         if line.is_last_line() && !line.raw_string.ends_with(LF) {
-            line.raw_string.push_str("\n");
+            line.raw_string.push_str(LF);
         }
         Some(())
     }
