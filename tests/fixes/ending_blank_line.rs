@@ -6,7 +6,7 @@ fn ending_blank_line() {
     let testfile = testdir.create_testfile(".env", "ABC=DEF\nDEF=HIJ\nFOO=BAR");
     let expected_output = String::from(
         "Fixed warnings:\n\
-        .env:1 EndingBlankLine: No blank line at the end of the file\n",
+        .env:3 EndingBlankLine: No blank line at the end of the file\n",
     );
     testdir.test_command_fix_success(expected_output);
 

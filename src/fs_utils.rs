@@ -1,4 +1,4 @@
-use crate::common::LineEntry;
+use crate::common::{LineEntry, LF};
 use std::fs::File;
 use std::io::{self, Write};
 use std::path::PathBuf;
@@ -38,10 +38,17 @@ pub fn get_relative_path(target_path: &PathBuf, base_path: &PathBuf) -> Option<P
 pub fn write_file(path: &PathBuf, lines: Vec<LineEntry>) -> io::Result<()> {
     let mut file = File::create(path)?;
 
-    // We don't write the last line, because it contains only LF (common::FileEntry::from)
-    // and writeln! already adds LF.
+    // We write all but the last line using writeln! to insert LFs
     for line in lines[..lines.len() - 1].iter() {
         writeln!(file, "{}", line.raw_string)?;
+    }
+
+    // For the last line, we use write! because EndingBlankLine can append LFs to the final line,
+    // and if we don't write it then it gets deleted
+    if let Some(line) = lines.last() {
+        if line.raw_string != LF && line.raw_string.ends_with(LF) {
+            write!(file, "{}", line.raw_string)?;
+        }
     }
 
     Ok(())
@@ -156,7 +163,7 @@ mod tests {
             LineEntry {
                 number: 3,
                 file: fe,
-                raw_string: String::from("\n"),
+                raw_string: String::from("FOO=BAR"),
             },
         ];
 
