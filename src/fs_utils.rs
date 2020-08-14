@@ -40,7 +40,7 @@ pub fn write_file(path: &PathBuf, lines: Vec<LineEntry>) -> io::Result<()> {
 
     // We don't write the last line, because it contains only LF (common::FileEntry::from)
     // and writeln! already adds LF.
-    for line in lines[..lines.len() - 1].iter() {
+    for line in lines[..lines.len()].iter() {
         writeln!(file, "{}", line.raw_string)?;
     }
 

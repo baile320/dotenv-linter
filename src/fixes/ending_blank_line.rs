@@ -19,8 +19,9 @@ impl Fix for EndingBlankLineFixer<'_> {
     }
 
     fn fix_line(&self, line: &mut LineEntry) -> Option<()> {
+        // we don't need to append anything, because fs_utils::write_file() uses writeln!, we just need to modify this
         if line.is_last_line() && !line.raw_string.ends_with(LF) {
-            line.raw_string = format!("{}\n", line.raw_string);
+            line.raw_string.push_str("");
         }
         Some(())
     }
@@ -44,40 +45,29 @@ mod tests {
             raw_string: String::from("FOO=BAR"),
         };
         assert_eq!(Some(()), fixer.fix_line(&mut line));
-        assert_eq!("FOO=BAR\n", line.raw_string);
+        assert_eq!("FOO=BAR", line.raw_string);
     }
 
     #[test]
     fn fix_warnings_test() {
         let fixer = EndingBlankLineFixer::default();
-        let mut lines = vec![
-            LineEntry {
-                number: 1,
-                file: FileEntry {
-                    path: PathBuf::from(".env"),
-                    file_name: ".env".to_string(),
-                    total_lines: 2,
-                },
-                raw_string: String::from("FOO=BAR"),
+        let mut lines = vec![LineEntry {
+            number: 1,
+            file: FileEntry {
+                path: PathBuf::from(".env"),
+                file_name: ".env".to_string(),
+                total_lines: 3,
             },
-            LineEntry {
-                number: 2,
-                file: FileEntry {
-                    path: PathBuf::from(".env"),
-                    file_name: ".env".to_string(),
-                    total_lines: 2,
-                },
-                raw_string: String::from("Z=Y"),
-            },
-        ];
+            raw_string: String::from("A=B"),
+        }];
         let mut warning = Warning::new(
-            lines[1].clone(),
+            lines[0].clone(),
             "EndingBlankLine",
             String::from("No blank line at the end of the file"),
         );
 
         assert_eq!(Some(1), fixer.fix_warnings(vec![&mut warning], &mut lines));
-        assert_eq!("Z=Y\n", lines[1].raw_string);
+        assert_eq!("A=B", lines[0].raw_string);
         assert!(warning.is_fixed);
     }
 }
