@@ -8,7 +8,7 @@ pub(crate) struct EndingBlankLineFixer<'a> {
 impl Default for EndingBlankLineFixer<'_> {
     fn default() -> Self {
         Self {
-            name: "ExtraBlankLine",
+            name: "EndingBlankLine",
         }
     }
 }
