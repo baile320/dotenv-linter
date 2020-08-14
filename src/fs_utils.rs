@@ -43,8 +43,8 @@ pub fn write_file(path: &PathBuf, lines: Vec<LineEntry>) -> io::Result<()> {
         writeln!(file, "{}", line.raw_string)?;
     }
 
-    // For the last line, we use write! because EndingBlankLine can append LFs to the final line,
-    // and if we don't write it then it gets deleted
+    // For the last line, if there is actual content, we use write! because EndingBlankLineFixer
+    // can append LFs to the final line, and if we don't write it then it gets deleted
     if let Some(line) = lines.last() {
         if line.raw_string != LF && line.raw_string.ends_with(LF) {
             write!(file, "{}", line.raw_string)?;
